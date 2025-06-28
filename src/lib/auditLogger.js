@@ -552,6 +552,51 @@ export async function logAccountDeletion({
 }
 
 /**
+ * Log account creation action
+ */
+export async function logAccountCreation({
+  userId,
+  userData,
+  reason = 'Account created',
+  metadata = {}
+}) {
+  try {
+    await connectDB();
+    
+    // Create centralized audit log entry
+    const auditEntry = new AuditLog({
+      type: 'user_management',
+      action: 'account_created',
+      performedBy: {
+        _id: userId,
+        name: userData.name,
+        role: userData.role
+      },
+      targetId: userId,
+      targetType: 'User',
+      targetName: userData.name,
+      changes: [{
+        field: 'status',
+        oldValue: null,
+        newValue: 'active'
+      }],
+      reason,
+      details: {
+        createdUserInfo: userData,
+        creationTime: new Date()
+      },
+      metadata
+    });
+
+    await auditEntry.save();
+    return true;
+  } catch (error) {
+    console.error('Failed to log account creation audit trail:', error);
+    return false;
+  }
+}
+
+/**
  * Log profile update action
  */
 export async function logProfileUpdate({

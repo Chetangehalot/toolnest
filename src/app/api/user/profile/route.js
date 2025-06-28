@@ -7,6 +7,46 @@ import bcrypt from 'bcryptjs';
 import { logProfileUpdate, getRequestMetadata } from '@/lib/auditLogger';
 import { logAuditTrail } from '@/lib/auditLogger';
 
+// GET /api/user/profile - Get current user profile
+export async function GET(request) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session) {
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+    }
+
+    await connectDB();
+
+    // Get current user with all fields
+    const user = await User.findById(session.user.id).select('-password');
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    return NextResponse.json({
+      success: true,
+      user: {
+        id: user._id.toString(),
+        name: user.name,
+        email: user.email,
+        image: user.image || '',
+        profession: user.profession || '',
+        bio: user.bio || '',
+        role: user.role,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt
+      }
+    });
+
+  } catch (error) {
+    console.error('Error fetching user profile:', error);
+    return NextResponse.json({ 
+      error: 'An error occurred while fetching profile',
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+    }, { status: 500 });
+  }
+}
+
 export async function PUT(request) {
   try {
     const session = await getServerSession(authOptions);

@@ -337,7 +337,7 @@ export default function NotificationDropdown() {
                   <BellIcon className="w-12 h-12 text-[#CFCFCF]/50 mx-auto mb-3" />
                   <p className="text-[#CFCFCF]">No notifications yet</p>
                   <p className="text-[#999] text-sm mt-1">
-                    You'll see updates about your blog posts here
+                    You&apos;ll see updates about your blog posts here
                   </p>
                 </div>
               ) : (

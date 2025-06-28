@@ -130,7 +130,7 @@ export default function DashboardPage() {
                 Welcome back, {session?.user?.name || 'User'}!
               </h1>
               <p className="text-[#CFCFCF] text-lg">
-                Here's your personal AI tools dashboard
+                Here&apos;s your personal AI tools dashboard
               </p>
             </div>
             

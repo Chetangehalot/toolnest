@@ -141,13 +141,13 @@ export default function SearchBar({ placeholder = "Search AI tools...", classNam
                   onClick={handleSubmit}
                   className="w-full px-4 py-2 text-[#00FFE0] hover:bg-[#00FFE0]/10 transition-colors text-sm font-medium"
                 >
-                  Search all results for "{query}"
+                  Search all results for &ldquo;{query}&rdquo;
                 </button>
               </div>
             </div>
           ) : query.length >= 2 ? (
             <div className="p-4 text-center">
-              <p className="text-[#CFCFCF] text-sm">No tools found for "{query}"</p>
+              <p className="text-[#CFCFCF] text-sm">No tools found for &ldquo;{query}&rdquo;</p>
               <button
                 onClick={handleSubmit}
                 className="mt-2 px-4 py-2 bg-[#00FFE0] text-[#0A0F24] rounded-lg hover:bg-[#00FFE0]/90 transition-colors font-semibold text-sm"

@@ -9,7 +9,7 @@ const auditLogSchema = new mongoose.Schema({
   },
   action: {
     type: String,
-    enum: ['created', 'updated', 'deleted', 'approved', 'rejected', 'reposted', 'moved_to_trash', 'hidden', 'restored', 'replied', 'role_changed', 'blocked', 'unblocked', 'profile_updated', 'data_modified', 'account_deleted', 'soft_deleted', 'permanently_deleted'],
+    enum: ['created', 'updated', 'deleted', 'approved', 'rejected', 'reposted', 'moved_to_trash', 'hidden', 'restored', 'replied', 'role_changed', 'blocked', 'unblocked', 'profile_updated', 'data_modified', 'account_created', 'account_deleted', 'soft_deleted', 'permanently_deleted'],
     required: true
   },
   

@@ -3,6 +3,10 @@ import { requireAdminOrManager } from '@/lib/auth-simple';
 import { connectToDatabase } from '@/lib/mongodb';
 import User from '@/models/User';
 
+// Force this route to be dynamic to prevent it from running during build
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 export async function POST(request) {
   try {
     // Check admin/manager authorization

@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { signIn, useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import NeuralNetwork from '@/components/NeuralNetwork';
 
-export default function LoginPage() {
+// Login component that uses searchParams
+function LoginPageContent() {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -142,5 +143,28 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Loading fallback component
+function LoginPageLoading() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-[#0A0F24] py-12 px-4 relative">
+      <NeuralNetwork />
+      <div className="w-full max-w-md relative z-10">
+        <div className="bg-[#0A0F24]/50 backdrop-blur-lg border border-[#00FFE0]/20 rounded-2xl p-8 shadow-xl">
+          <div className="text-center text-[#CFCFCF]">Loading...</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Main export with Suspense boundary
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<LoginPageLoading />}>
+      <LoginPageContent />
+    </Suspense>
   );
 } 

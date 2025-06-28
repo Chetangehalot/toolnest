@@ -90,7 +90,7 @@ export default function RecentlyViewedPage() {
           <div className="flex justify-between items-center mb-8">
             <div>
               <h1 className="text-3xl font-bold text-[#F5F5F5] cursor-text select-text">Recently Viewed Tools</h1>
-              <p className="text-[#CFCFCF] cursor-text select-text" title="Your browsing history">Tools you've recently visited</p>
+              <p className="text-[#CFCFCF] cursor-text select-text" title="Your browsing history">Tools you&apos;ve recently visited</p>
             </div>
             <Link 
               href="/dashboard"
@@ -129,7 +129,7 @@ export default function RecentlyViewedPage() {
               </div>
               <h3 className="text-2xl font-bold text-[#F5F5F5] mb-4">No Recently Viewed Tools</h3>
               <p className="text-[#CFCFCF] mb-8 max-w-md mx-auto leading-relaxed cursor-text select-text">
-                Start exploring AI tools to see them appear here. Your browsing history will help you find tools you've visited before.
+                Start exploring AI tools to see them appear here. Your browsing history will help you find tools you&apos;ve visited before.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -179,8 +179,8 @@ const BlogResultCard = ({ blog }) => (
   </motion.div>
 );
 
-// Main Search Page Component
-export default function SearchPage() {
+// Main Search Component that uses searchParams
+function SearchPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const query = searchParams.get('q') || '';
@@ -524,5 +524,29 @@ export default function SearchPage() {
         </div>
       </div>
     </Layout>
+  );
+}
+
+// Loading fallback component
+function SearchPageLoading() {
+  return (
+    <Layout>
+      <div className="min-h-screen bg-gradient-to-br from-[#0A0F24] via-[#0F1830] to-[#1A1F3A] pt-24">
+        <div className="container mx-auto px-4 pb-12">
+          <div className="text-center py-12">
+            <div className="text-[#CFCFCF]">Loading search...</div>
+          </div>
+        </div>
+      </div>
+    </Layout>
+  );
+}
+
+// Main export with Suspense boundary
+export default function SearchPage() {
+  return (
+    <Suspense fallback={<SearchPageLoading />}>
+      <SearchPageContent />
+    </Suspense>
   );
 } 

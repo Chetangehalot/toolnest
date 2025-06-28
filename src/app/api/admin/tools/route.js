@@ -2,6 +2,10 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth-simple';
 import connectDB from '@/lib/db';
+
+// Force this route to be dynamic to prevent it from running during build
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import Tool from '@/models/Tool';
 import { logToolAction, getRequestMetadata } from '@/lib/auditLogger';
 

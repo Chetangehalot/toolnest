@@ -325,6 +325,9 @@ const HourlyChart = ({ data = [] }) => {
 };
 
 const SimpleChart = ({ data = [], type = 'views', timeRange = '30' }) => {
+  // State for cursor tracking - must be at the top
+  const [cursorData, setCursorData] = useState(null);
+
   if (!data.length) return <div className="text-[#CFCFCF] text-center py-4">No data available</div>;
   
   // Use all available data instead of hardcoded slice
@@ -337,9 +340,6 @@ const SimpleChart = ({ data = [], type = 'views', timeRange = '30' }) => {
   // If all values are 0, show a flat line with minimal height
   const showFlatLine = maxValue === 0;
   const effectiveMax = showFlatLine ? 1 : maxValue;
-
-  // State for cursor tracking
-  const [cursorData, setCursorData] = useState(null);
 
   // Get the time period text
   const getTimeRangeText = (days) => {
@@ -762,6 +762,9 @@ const SimpleChart = ({ data = [], type = 'views', timeRange = '30' }) => {
 };
 
 const MultiLineChart = ({ data = [], timeRange = '30', blogAnalytics = null }) => {
+  // State for cursor tracking - must be at the top
+  const [cursorData, setCursorData] = useState(null);
+
   if (!data.length) return <div className="text-[#CFCFCF] text-center py-4">No data available</div>;
   
   const chartData = data;
@@ -786,9 +789,6 @@ const MultiLineChart = ({ data = [], timeRange = '30', blogAnalytics = null }) =
   // Use the highest max for consistent scaling
   const globalMax = Math.max(maxViews, maxLikes, maxComments, maxEngagement);
   const effectiveMax = globalMax === 0 ? 1 : globalMax;
-
-  // State for cursor tracking
-  const [cursorData, setCursorData] = useState(null);
 
   // Enhanced CSV Export function with detailed blog post data
   const exportToCSV = () => {
@@ -1261,7 +1261,7 @@ const TodaysBlogPosts = ({ posts = [] }) => {
       {/* Stats Header */}
       <div className="flex justify-between items-center">
         <div className="text-[#F5F5F5] text-lg font-semibold">
-          Today's Published Posts: <span className="text-[#00FFE0]">{todaysPosts.length}</span>
+          Today&apos;s Published Posts: <span className="text-[#00FFE0]">{todaysPosts.length}</span>
         </div>
         <Link
           href="/admin/blogs"
@@ -1327,7 +1327,7 @@ const TodaysComments = ({ comments = [] }) => {
       {/* Stats Header */}
       <div className="flex justify-between items-center">
         <div className="text-[#F5F5F5] text-lg font-semibold">
-          Today's Comments: <span className="text-[#F59E0B]">{todaysComments.length}</span>
+          Today&apos;s Comments: <span className="text-[#F59E0B]">{todaysComments.length}</span>
         </div>
         <Link
           href="/admin/blogs"
@@ -1359,14 +1359,14 @@ const TodaysComments = ({ comments = [] }) => {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="text-[#F5F5F5] text-sm line-clamp-2 mb-2">
-                    "{comment.content || comment.text || 'Comment content'}"
+                    &ldquo;{comment.content || comment.text || 'Comment content'}&rdquo;
                   </div>
                   <div className="flex items-center gap-2 text-xs text-[#CFCFCF]">
                     <span>By {comment.author?.name || comment.userName || 'Anonymous'}</span>
                     <span>•</span>
                     <span>{new Date(comment.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</span>
                     <span>•</span>
-                    <span className="text-[#F59E0B]">on "{comment.post?.title || 'Blog Post'}"</span>
+                    <span className="text-[#F59E0B]">on &ldquo;{comment.post?.title || 'Blog Post'}&rdquo;</span>
                   </div>
                 </div>
               </div>

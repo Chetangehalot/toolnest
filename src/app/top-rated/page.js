@@ -280,7 +280,7 @@ export default function TopRatedPage() {
                   </div>
                   <h3 className="text-2xl font-bold text-[#F5F5F5] mb-4">No Top-Rated Tools Yet</h3>
                   <p className="text-[#CFCFCF] mb-8 leading-relaxed">
-                    We're still collecting ratings from our community. 
+                    We&apos;re still collecting ratings from our community. 
                     Be the first to discover and rate amazing AI tools!
                   </p>
                   <div className="flex gap-4 justify-center">

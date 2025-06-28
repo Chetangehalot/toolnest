@@ -42,6 +42,19 @@ export default function ProfilePage() {
   const [message, setMessage] = useState({ text: '', type: '' });
   const [isSuccess, setIsSuccess] = useState(false);
 
+  const fetchUserProfile = async () => {
+    try {
+      const response = await fetch('/api/user/profile');
+      if (response.ok) {
+        const data = await response.json();
+        return data.user;
+      }
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+    }
+    return null;
+  };
+
   useEffect(() => {
     if (status === 'loading') return;
     
@@ -50,28 +63,96 @@ export default function ProfilePage() {
       return;
     }
 
-    // Initialize form with session data
-    setFormData({
-      name: session.user.name || '',
-      email: session.user.email || '',
-      profession: session.user.profession || '',
-      bio: session.user.bio || '',
-      image: session.user.image || '',
-      currentPassword: '',
-      newPassword: '',
-      confirmPassword: ''
-    });
-    
-    setImagePreview(session.user.image || null);
-    setLoading(false);
+    // Fetch the latest user data to ensure we have current bio information
+    const loadUserData = async () => {
+      const latestUserData = await fetchUserProfile();
+      
+      const userData = latestUserData || session.user;
+      
+      // Check for any unsaved changes in localStorage
+      const storedFormData = loadFormFromStorage();
+      
+      // Initialize form with latest user data
+      const initialFormData = {
+        name: userData.name || '',
+        email: userData.email || '',
+        profession: userData.profession || '',
+        bio: userData.bio || '',
+        image: userData.image || '',
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+      };
+
+      // Merge with stored data if available (prioritize user changes)
+      if (storedFormData) {
+        Object.keys(storedFormData).forEach(key => {
+          if (storedFormData[key] !== undefined && storedFormData[key] !== initialFormData[key]) {
+            initialFormData[key] = storedFormData[key];
+          }
+        });
+      }
+      
+      setFormData(initialFormData);
+      setImagePreview(initialFormData.image || null);
+      setLoading(false);
+    };
+
+    loadUserData();
   }, [session, status, router]);
+
+  // Cleanup effect - clear storage when component unmounts unless there are unsaved changes
+  useEffect(() => {
+    return () => {
+      // Only clear if user is navigating away (not refreshing)
+      if (typeof window !== 'undefined' && window.performance) {
+        const navigation = window.performance.getEntriesByType('navigation')[0];
+        if (navigation && navigation.type === 'navigate') {
+          clearFormStorage();
+        }
+      }
+    };
+  }, []);
+
+  // Save form data to localStorage
+  const saveFormToStorage = (data) => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('profileFormData', JSON.stringify(data));
+    }
+  };
+
+  // Load form data from localStorage
+  const loadFormFromStorage = () => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('profileFormData');
+      return stored ? JSON.parse(stored) : null;
+    }
+    return null;
+  };
+
+  // Clear stored form data
+  const clearFormStorage = () => {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('profileFormData');
+    }
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
+    const newFormData = {
+      ...formData,
       [name]: value
-    }));
+    };
+    
+    setFormData(newFormData);
+    
+    // Save to localStorage for persistence across tab switches
+    // Don't save password fields for security
+    const dataToSave = { ...newFormData };
+    delete dataToSave.currentPassword;
+    delete dataToSave.newPassword;
+    delete dataToSave.confirmPassword;
+    saveFormToStorage(dataToSave);
     
     // Clear messages when user starts typing
     if (message.text) {
@@ -177,6 +258,9 @@ export default function ProfilePage() {
       if (response.ok) {
         setMessage({ text: 'Profile updated successfully!', type: 'success' });
         setIsSuccess(true);
+        
+        // Clear stored form data since changes are saved
+        clearFormStorage();
         
         // Clear password fields
         setFormData(prev => ({
@@ -466,7 +550,7 @@ export default function ProfilePage() {
               >
                 <h3 className="text-xl font-bold text-[#F5F5F5] mb-6">Change Password</h3>
                 <p className="text-[#CFCFCF] text-sm mb-6">
-                  Leave these fields blank if you don't want to change your password
+                  Leave these fields blank if you don&apos;t want to change your password
                 </p>
 
                 <div className="space-y-6">

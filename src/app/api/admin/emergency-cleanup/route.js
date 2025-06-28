@@ -1,7 +1,11 @@
 import { NextResponse } from 'next/server';
 import { requireAdminOrManager } from '@/lib/auth-simple';
-import { connectToDatabase } from '@/lib/mongodb';
+import connectDB from '@/lib/db';
 import User from '@/models/User';
+
+// Force this route to be dynamic to prevent it from running during build
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 export async function POST(request) {
   try {
@@ -10,7 +14,7 @@ export async function POST(request) {
       return NextResponse.json({ error: authResult.error }, { status: authResult.status });
     }
 
-    await connectToDatabase();
+    await connectDB();
 
     const allUsers = await User.find({
       bookmarks: { $exists: true, $ne: [] }
@@ -105,7 +109,7 @@ export async function GET(request) {
       return NextResponse.json({ error: authResult.error }, { status: authResult.status });
     }
 
-    await connectToDatabase();
+    await connectDB();
 
     const stats = await User.aggregate([
       {

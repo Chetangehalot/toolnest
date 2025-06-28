@@ -65,23 +65,29 @@ export default function ToolCard({
 
   const handleBookmarkClick = (e) => {
     e.stopPropagation();
+    e.preventDefault();
+  };
+
+  const handleCardClick = () => {
+    if (typeof window !== 'undefined') {
+      window.location.href = `/tools/${toolSlug}`;
+    }
   };
 
   return (
-    <Link href={`/tools/${toolSlug}`} className="block h-full">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        whileHover={{ 
-          y: -8,
-          scale: 1.02,
-          transition: { duration: 0.2, ease: "easeOut" }
-        }}
-        whileTap={{ scale: 0.98 }}
-        className={`relative group cursor-pointer h-full ${
-          viewMode === "list" ? "flex items-center gap-6 p-6" : "flex flex-col"
-        } card card-hover bg-[#0A0F24]/50 backdrop-blur-lg border border-[#00FFE0]/20 rounded-2xl overflow-hidden transition-all duration-300 hover:border-[#00FFE0]/40 hover:shadow-xl hover:shadow-[#00FFE0]/10`}
-      >
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ 
+        y: -8,
+        scale: 1.02,
+        transition: { duration: 0.2, ease: "easeOut" }
+      }}
+      whileTap={{ scale: 0.98 }}
+      className={`relative group h-full ${
+        viewMode === "list" ? "flex items-center gap-6 p-6" : "flex flex-col"
+      } card card-hover bg-[#0A0F24]/50 backdrop-blur-lg border border-[#00FFE0]/20 rounded-2xl overflow-hidden transition-all duration-300 hover:border-[#00FFE0]/40 hover:shadow-xl hover:shadow-[#00FFE0]/10`}
+    >
         {viewMode === "list" ? (
           // List View Layout
           <>
@@ -117,7 +123,10 @@ export default function ToolCard({
             <div className="flex-1 min-w-0 space-y-2">
               {/* Title and Rating */}
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-bold text-[#F5F5F5] group-hover:text-[#00FFE0] transition-colors truncate pr-2">{name}</h3>
+                <h3 
+                  onClick={handleCardClick}
+                  className="text-lg font-bold text-[#F5F5F5] group-hover:text-[#00FFE0] transition-colors truncate pr-2 cursor-pointer"
+                >{name}</h3>
                 <div className="flex items-center gap-1 flex-shrink-0">
                   <StarIcon className="w-4 h-4 text-yellow-400" />
                   <span className="text-[#CFCFCF] font-medium text-sm">{rating.toFixed(1)}</span>
@@ -187,17 +196,23 @@ export default function ToolCard({
                   <ArrowTopRightOnSquareIcon className="w-4 h-4" />
                 </button>
               )}
-              <span className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-[#00FFE0]/20 text-[#00FFE0] group-hover:bg-[#00FFE0]/10 transition-colors text-sm cursor-pointer">
+              <button
+                onClick={handleCardClick}
+                className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-[#00FFE0]/20 text-[#00FFE0] group-hover:bg-[#00FFE0]/10 transition-colors text-sm cursor-pointer hover:scale-105"
+              >
                 <span>Details</span>
                 <ArrowTopRightOnSquareIcon className="w-4 h-4" />
-              </span>
+              </button>
             </div>
           </>
         ) : (
           // Grid View Layout (Original)
           <div className="relative overflow-hidden">
-            {/* Header Image */}
-            <div className="relative aspect-video">
+                          {/* Header Image */}
+            <div 
+              onClick={handleCardClick}
+              className="relative aspect-video cursor-pointer"
+            >
               <div className="absolute inset-0 bg-gradient-to-t from-[#0A0F24] to-transparent z-10" />
               <div className="relative w-full h-full">
                 <Image
@@ -261,7 +276,10 @@ export default function ToolCard({
                       />
                     </div>
                   </div>
-                  <h3 className="text-xl font-bold text-[#F5F5F5] group-hover:text-[#00FFE0] transition-colors cursor-pointer">{name}</h3>
+                  <h3 
+                    onClick={handleCardClick}
+                    className="text-xl font-bold text-[#F5F5F5] group-hover:text-[#00FFE0] transition-colors cursor-pointer"
+                  >{name}</h3>
                 </div>
                 <div className="flex items-center gap-1">
                   <StarIcon className="w-4 h-4 text-yellow-400" />
@@ -308,10 +326,13 @@ export default function ToolCard({
 
               {/* Actions */}
               <div className="flex items-center justify-between mt-auto pt-2">
-                <span className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-[#00FFE0]/20 text-[#00FFE0] group-hover:bg-[#00FFE0]/10 transition-colors font-semibold cursor-pointer">
+                <button
+                  onClick={handleCardClick}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-[#00FFE0]/20 text-[#00FFE0] group-hover:bg-[#00FFE0]/10 transition-colors font-semibold cursor-pointer hover:scale-105"
+                >
                   <span>View Details</span>
                   <ArrowTopRightOnSquareIcon className="w-4 h-4" />
-                </span>
+                </button>
                 
                 {website && website !== '#' && (
                   <button
@@ -331,6 +352,5 @@ export default function ToolCard({
           </div>
         )}
       </motion.div>
-    </Link>
-  );
-} 
+    );
+  } 
