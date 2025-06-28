@@ -1,36 +1,192 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ToolNest - AI Tools Discovery Platform
 
-## Getting Started
+A modern platform for discovering, reviewing, and managing AI tools with advanced analytics and user management features.
 
-First, run the development server:
+## 🚀 Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **AI Tools Directory**: Comprehensive catalog of AI tools with ratings and reviews
+- **User Management**: Role-based access control (Admin, Manager, Writer, User)
+- **Advanced Analytics**: Real-time analytics for tools, users, and content engagement
+- **Blog Platform**: Integrated blogging system with rich text editor
+- **Review System**: User reviews and ratings with moderation capabilities
+- **Search & Filter**: Powerful search with category and subcategory filters
+- **Responsive Design**: Modern UI with dark theme and mobile optimization
+
+## 🛠 Tech Stack
+
+- **Frontend**: Next.js 14, React, Tailwind CSS
+- **Backend**: Next.js API Routes, Node.js
+- **Database**: MongoDB with Mongoose ODM
+- **Authentication**: NextAuth.js with MongoDB adapter
+- **UI Components**: Heroicons, Lucide React
+- **Styling**: Tailwind CSS with custom animations
+
+## 📋 Prerequisites
+
+- Node.js 18.0.0 or higher
+- npm 8.0.0 or higher
+- MongoDB database (local or Atlas)
+
+## 🚀 Production Deployment
+
+### Environment Variables
+
+Create a `.env.local` file with the following variables:
+
+```env
+# Database
+MONGODB_URI=mongodb://localhost:27017/toolnest
+# For production, use MongoDB Atlas:
+# MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/toolnest
+
+# NextAuth Configuration
+NEXTAUTH_URL=https://yourdomain.com
+NEXTAUTH_SECRET=your-super-secret-key-here
+
+# Additional Security (Optional)
+NODE_ENV=production
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Installation & Build
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+# Clone the repository
+git clone <repository-url>
+cd toolnest
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+# Install dependencies
+npm install
 
-## Learn More
+# Build for production
+npm run build
 
-To learn more about Next.js, take a look at the following resources:
+# Start production server
+npm start
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Database Setup
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. **Create Admin User**:
+```bash
+npm run create-admin "Admin Name" "admin@example.com" "secure-password"
+```
 
-## Deploy on Vercel
+2. **Update User Roles** (if needed):
+```bash
+npm run update-role "user@example.com" "admin"
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Production Optimizations
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The application includes several production optimizations:
+
+- **Console Removal**: Debug logs are automatically removed in production
+- **Image Optimization**: WebP and AVIF format support
+- **Bundle Optimization**: Tree shaking and code splitting
+- **Compression**: Gzip compression enabled
+- **Security Headers**: Security-focused HTTP headers
+
+### Deployment Options
+
+#### Vercel (Recommended)
+1. Connect your repository to Vercel
+2. Set environment variables in Vercel dashboard
+3. Deploy automatically on push to main branch
+
+#### Docker
+```dockerfile
+FROM node:18-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --only=production
+COPY . .
+RUN npm run build
+EXPOSE 3000
+CMD ["npm", "start"]
+```
+
+#### PM2 (Traditional Server)
+```bash
+npm install -g pm2
+pm2 start npm --name "toolnest" -- start
+pm2 save
+pm2 startup
+```
+
+## 🔧 Development
+
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Lint code
+npm run lint
+
+# Fix linting issues
+npm run lint:fix
+
+# Type check
+npm run type-check
+
+# Clean build cache
+npm run clean
+```
+
+## 📊 Features Overview
+
+### User Roles
+- **Admin**: Full system access, user management, analytics
+- **Manager**: Content moderation, user management, analytics
+- **Writer**: Blog creation, content management
+- **User**: Tool browsing, reviews, bookmarks
+
+### Analytics Dashboard
+- Real-time user engagement metrics
+- Tool popularity tracking
+- Blog post performance analytics
+- Staff activity monitoring
+
+### Content Management
+- Rich text blog editor with auto-save
+- Tool submission and approval workflow
+- Review moderation system
+- Category and tag management
+
+## 🔐 Security
+
+- Secure authentication with NextAuth.js
+- Role-based access control
+- Input validation and sanitization
+- CSRF protection
+- Rate limiting on API endpoints
+
+## 📈 Performance
+
+- Server-side rendering (SSR)
+- Static site generation (SSG) where applicable
+- Image optimization with WebP/AVIF
+- Code splitting and lazy loading
+- Optimized bundle sizes
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/amazing-feature`
+3. Commit changes: `git commit -m 'Add amazing feature'`
+4. Push to branch: `git push origin feature/amazing-feature`
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🆘 Support
+
+For support, please contact the development team or create an issue in the repository.
+
+---
+
+Built with ❤️ using Next.js and modern web technologies.
