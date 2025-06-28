@@ -407,6 +407,23 @@ export async function logUserBlock({
 }
 
 /**
+ * Log account blocking action (alias for logUserBlock)
+ */
+export async function logAccountBlocking({
+  targetUserId,
+  performedBy,
+  reason,
+  metadata = {}
+}) {
+  return await logUserBlock({
+    targetUserId,
+    performedBy,
+    reason,
+    metadata
+  });
+}
+
+/**
  * Log user unblock action
  */
 export async function logUserUnblock({
