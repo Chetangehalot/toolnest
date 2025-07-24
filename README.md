@@ -2,6 +2,8 @@
 
 A modern platform for discovering, reviewing, and managing AI tools with advanced analytics and user management features.
 
+## Admin Data : Email - admin@toolnest.com, Password - 1122112211
+
 ## 🚀 Features
 
 - **AI Tools Directory**: Comprehensive catalog of AI tools with ratings and reviews
