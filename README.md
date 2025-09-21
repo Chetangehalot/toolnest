@@ -2,6 +2,8 @@
 
 A modern platform for discovering, reviewing, and managing AI tools with advanced analytics and user management features.
 
+# Vercal Host Link : https://toolnest-ai.vercel.app
+
 ## Admin Data : Email - admin@toolnest.com, Password - 1122112211
 
 ## 🚀 Features
@@ -181,9 +183,6 @@ npm run clean
 4. Push to branch: `git push origin feature/amazing-feature`
 5. Open a Pull Request
 
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🆘 Support
 
