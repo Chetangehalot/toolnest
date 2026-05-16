@@ -1,8 +1,11 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth-simple';
-import connectDB from '@/lib/db';
+import { connectToDatabase } from '@/lib/mongodb';
 import User from '@/models/User';
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 export async function GET(request) {
   try {
@@ -15,7 +18,7 @@ export async function GET(request) {
       return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
 
-    await connectDB();
+    await connectToDatabase();
 
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page')) || 1;
@@ -103,7 +106,7 @@ export async function POST(request) {
       return NextResponse.json({ error: 'User ID and action are required' }, { status: 400 });
     }
 
-    await connectDB();
+    await connectToDatabase();
 
     let updateData = {};
 

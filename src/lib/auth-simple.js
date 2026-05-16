@@ -3,6 +3,11 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import bcrypt from 'bcryptjs';
 import { connectToDatabase } from '@/lib/mongodb';
 import User from '@/models/User';
+import { ensureProductionEnv, isProductionDeployment } from '@/lib/env';
+
+ensureProductionEnv();
+
+const useSecureCookies = isProductionDeployment();
 
 export const authOptions = {
   providers: [
@@ -115,7 +120,9 @@ export const authOptions = {
     error: '/auth/error',
   },
   secret: process.env.NEXTAUTH_SECRET,
-  debug: false,
+  trustHost: true,
+  useSecureCookies,
+  debug: process.env.NODE_ENV === 'development',
 };
 
 // Helper function to require admin or manager authentication

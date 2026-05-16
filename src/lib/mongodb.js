@@ -1,10 +1,17 @@
 import mongoose from "mongoose";
+import { ensureProductionEnv } from "@/lib/env";
 
-if (!process.env.MONGODB_URI) {
-  throw new Error('Invalid/Missing environment variable: "MONGODB_URI"');
+ensureProductionEnv();
+
+function getMongoUri() {
+  const uri = process.env.MONGODB_URI;
+  if (!uri) {
+    throw new Error(
+      'MONGODB_URI is not set. Add it in Vercel → Project → Settings → Environment Variables.'
+    );
+  }
+  return uri;
 }
-
-const MONGODB_URI = process.env.MONGODB_URI;
 
 let cached = global.mongoose;
 
@@ -20,9 +27,12 @@ export async function connectToDatabase() {
   if (!cached.promise) {
     const opts = {
       bufferCommands: false,
+      maxPoolSize: 10,
+      serverSelectionTimeoutMS: 15000,
+      socketTimeoutMS: 45000,
     };
 
-    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
+    cached.promise = mongoose.connect(getMongoUri(), opts).then((mongoose) => {
       return mongoose;
     });
   }
