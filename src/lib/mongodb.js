@@ -38,6 +38,4 @@ export async function connectToDatabase() {
   return cached.conn;
 }
 
-const clientPromise = connectToDatabase();
-
-export default clientPromise; 
+export default connectToDatabase;

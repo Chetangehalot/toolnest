@@ -14,19 +14,21 @@ export const authOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          throw new Error('Invalid credentials');
+          return null;
         }
+
+        const email = credentials.email.toLowerCase().trim();
 
         try {
           await connectToDatabase();
-          
+
           const user = await User.findOne(
-            { email: credentials.email },
+            { email },
             'email password name role image profession isBlocked'
           ).lean();
-          
-          if (!user || !user?.password) {
-            throw new Error('Invalid credentials');
+
+          if (!user?.password) {
+            return null;
           }
 
           if (user.isBlocked) {
@@ -39,13 +41,15 @@ export const authOptions = {
           );
 
           if (!isCorrectPassword) {
-            throw new Error('Invalid credentials');
+            return null;
           }
 
-          // Update lastLogin timestamp
-          await User.findByIdAndUpdate(user._id, {
-            lastLogin: new Date()
-          });
+          // Non-critical: do not fail login if this write fails
+          try {
+            await User.findByIdAndUpdate(user._id, { lastLogin: new Date() });
+          } catch (updateError) {
+            console.warn('Failed to update lastLogin:', updateError.message);
+          }
 
           return {
             id: user._id.toString(),
@@ -56,7 +60,11 @@ export const authOptions = {
             profession: user.profession || '',
           };
         } catch (error) {
-          throw new Error(error.message || 'Authentication failed');
+          if (error.message?.includes('blocked')) {
+            throw error;
+          }
+          console.error('Auth error:', error);
+          throw new Error('Authentication failed. Please try again.');
         }
       }
     })
