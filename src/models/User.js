@@ -55,6 +55,24 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  blockedAt: {
+    type: Date,
+    default: null,
+  },
+  blockedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: null,
+  },
+  unblockedAt: {
+    type: Date,
+    default: null,
+  },
+  unblockedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: null,
+  },
   bookmarks: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Tool'

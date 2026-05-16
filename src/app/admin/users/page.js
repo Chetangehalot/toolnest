@@ -119,6 +119,22 @@ export default function UserManagementPage() {
     });
   };
 
+  const showApiError = (title, errorPayload) => {
+    const message =
+      errorPayload?.error ||
+      errorPayload?.details ||
+      errorPayload?.message ||
+      'Something went wrong. Please try again.';
+    setConfirmModal({
+      isOpen: true,
+      type: 'danger',
+      title,
+      message,
+      confirmText: 'OK',
+      onConfirm: closeConfirmModal,
+    });
+  };
+
   const handleRoleChange = async (userId, newRole) => {
     const user = users.find(u => u._id === userId);
     if (!user) return;
@@ -139,34 +155,16 @@ export default function UserManagementPage() {
             body: JSON.stringify({ role: newRole }),
           });
 
+          const data = await response.json();
           if (response.ok) {
-            setUsers(prevUsers => 
-              prevUsers.map(user => 
-                user._id === userId ? { ...user, role: newRole } : user
-              )
-            );
+            await fetchUsers();
           } else {
-            const error = await response.json();
-            setConfirmModal({
-              isOpen: true,
-              type: 'danger',
-              title: 'Error',
-              message: error.error || 'Failed to update user role',
-              confirmText: 'OK',
-              onConfirm: closeConfirmModal
-            });
+            showApiError('Role change failed', data);
             return;
           }
         } catch (error) {
           console.error('Error updating user role:', error);
-          setConfirmModal({
-            isOpen: true,
-            type: 'danger',
-            title: 'Error',
-            message: 'Failed to update user role',
-            confirmText: 'OK',
-            onConfirm: closeConfirmModal
-          });
+          showApiError('Role change failed', { error: error.message });
           return;
         }
         closeConfirmModal();
@@ -194,34 +192,16 @@ export default function UserManagementPage() {
             body: JSON.stringify({ isBlocked: block }),
           });
 
+          const data = await response.json();
           if (response.ok) {
-            setUsers(prevUsers => 
-              prevUsers.map(user => 
-                user._id === userId ? { ...user, isBlocked: block } : user
-              )
-            );
+            await fetchUsers();
           } else {
-            const error = await response.json();
-            setConfirmModal({
-              isOpen: true,
-              type: 'danger',
-              title: 'Error',
-              message: error.error || 'Failed to update user status',
-              confirmText: 'OK',
-              onConfirm: closeConfirmModal
-            });
+            showApiError(block ? 'Block failed' : 'Unblock failed', data);
             return;
           }
         } catch (error) {
           console.error('Error updating user status:', error);
-          setConfirmModal({
-            isOpen: true,
-            type: 'danger',
-            title: 'Error',
-            message: 'Failed to update user status',
-            confirmText: 'OK',
-            onConfirm: closeConfirmModal
-          });
+          showApiError(block ? 'Block failed' : 'Unblock failed', { error: error.message });
           return;
         }
         closeConfirmModal();
@@ -243,32 +223,20 @@ export default function UserManagementPage() {
         try {
           const response = await fetch(`/api/admin/users/${userId}`, {
             method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ reason: 'Deleted from admin user management' }),
           });
 
+          const data = await response.json();
           if (response.ok) {
-            setUsers(prevUsers => prevUsers.filter(user => user._id !== userId));
+            await fetchUsers();
           } else {
-            const error = await response.json();
-            setConfirmModal({
-              isOpen: true,
-              type: 'danger',
-              title: 'Error',
-              message: error.error || 'Failed to delete user',
-              confirmText: 'OK',
-              onConfirm: closeConfirmModal
-            });
+            showApiError('Delete failed', data);
             return;
           }
         } catch (error) {
           console.error('Error deleting user:', error);
-          setConfirmModal({
-            isOpen: true,
-            type: 'danger',
-            title: 'Error',
-            message: 'Failed to delete user',
-            confirmText: 'OK',
-            onConfirm: closeConfirmModal
-          });
+          showApiError('Delete failed', { error: error.message });
           return;
         }
         closeConfirmModal();

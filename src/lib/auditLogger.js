@@ -1,6 +1,8 @@
 import User from '@/models/User';
 import AuditLog from '@/models/AuditLog';
-import connectDB from '@/lib/dbConnect';
+import { connectToDatabase } from '@/lib/mongodb';
+
+const connectDB = connectToDatabase;
 
 /**
  * Extract request metadata for audit logging
@@ -413,13 +415,22 @@ export async function logAccountBlocking({
   targetUserId,
   performedBy,
   reason,
-  metadata = {}
+  metadata = {},
+  isBlocked = true,
 }) {
-  return await logUserBlock({
+  if (isBlocked) {
+    return await logUserBlock({
+      targetUserId,
+      performedBy,
+      reason,
+      metadata,
+    });
+  }
+  return await logUserUnblock({
     targetUserId,
     performedBy,
     reason,
-    metadata
+    metadata,
   });
 }
 

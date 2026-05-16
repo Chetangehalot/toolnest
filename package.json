@@ -12,7 +12,8 @@
     "type-check": "tsc --noEmit",
     "clean": "rimraf .next",
     "create-admin": "node scripts/create-admin.js",
-    "update-role": "node scripts/update-user-role.js"
+    "update-role": "node scripts/update-user-role.js",
+    "seed:demo": "node scripts/seed-demo-analytics.js"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",

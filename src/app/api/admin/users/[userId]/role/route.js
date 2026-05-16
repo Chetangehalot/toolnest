@@ -1,95 +1,106 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth-simple';
-import dbConnect from '@/lib/dbConnect';
+import { connectToDatabase } from '@/lib/mongodb';
 import User from '@/models/User';
 import { logRoleChange, getRequestMetadata } from '@/lib/auditLogger';
+import {
+  getSessionUserId,
+  isValidObjectId,
+  canManagerModifyTarget,
+} from '@/lib/admin-auth';
+
+export const dynamic = 'force-dynamic';
 
 export async function PATCH(request, { params }) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user || !['admin', 'manager'].includes(session.user.role)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    await dbConnect();
-    
+    const actorId = getSessionUserId(session);
+    if (!actorId) {
+      return NextResponse.json({ error: 'Invalid session' }, { status: 401 });
+    }
+
     const { userId } = params;
+    if (!isValidObjectId(userId)) {
+      return NextResponse.json({ error: 'Invalid user ID' }, { status: 400 });
+    }
+
+    await connectToDatabase();
+
     const { role, reason } = await request.json();
 
-    // Validate role
     const validRoles = ['user', 'writer', 'manager', 'admin'];
     if (!validRoles.includes(role)) {
       return NextResponse.json({ error: 'Invalid role' }, { status: 400 });
     }
 
-    // Managers can only assign user/writer roles
     if (session.user.role === 'manager' && !['user', 'writer'].includes(role)) {
-      return NextResponse.json({ 
-        error: 'Managers can only assign user or writer roles' 
+      return NextResponse.json({
+        error: 'Managers can only assign user or writer roles',
       }, { status: 403 });
     }
 
-    // Find the user
     const user = await User.findById(userId);
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
+    if (!canManagerModifyTarget(session, user)) {
+      return NextResponse.json({
+        error: 'Managers cannot modify admins or other managers',
+      }, { status: 403 });
+    }
+
     const oldRole = user.role;
 
-    // Can't change own role
-    if (user._id.toString() === session.user.id) {
+    if (user._id.toString() === actorId) {
       return NextResponse.json({ error: 'Cannot change your own role' }, { status: 400 });
     }
 
-    // Prevent changing role if no change
     if (oldRole === role) {
-      return NextResponse.json({ 
-        error: `User already has the role: ${role}` 
+      return NextResponse.json({
+        error: `User already has the role: ${role}`,
       }, { status: 400 });
     }
 
-    // Update user role
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       { role, updatedAt: new Date() },
-      { new: true, runValidators: true }
+      { new: true, runValidators: true, validateModifiedOnly: true }
     ).select('-password');
 
-    // Log role change action
+    if (!updatedUser) {
+      return NextResponse.json({ error: 'Failed to update user' }, { status: 500 });
+    }
+
     try {
       const metadata = getRequestMetadata(request);
       await logRoleChange({
         targetUserId: userId,
         performedBy: {
-          _id: session.user.id,
+          _id: actorId,
           name: session.user.name,
-          role: session.user.role
+          role: session.user.role,
         },
         fromRole: oldRole,
         toRole: role,
         reason: reason || `Role changed from ${oldRole} to ${role} by ${session.user.name}`,
-        metadata
+        metadata,
       });
     } catch (auditError) {
       console.error('Failed to log role change audit:', auditError);
-      // Don't fail the role change if audit logging fails
     }
 
     return NextResponse.json({
       success: true,
-      user: updatedUser,
+      user: { ...updatedUser.toObject(), _id: updatedUser._id.toString() },
       message: `User role changed from ${oldRole} to ${role}`,
-      changes: {
-        field: 'role',
-        oldValue: oldRole,
-        newValue: role,
-        reason: reason || `Role changed by ${session.user.name}`
-      }
     });
-
   } catch (error) {
     console.error('Error changing user role:', error);
     return NextResponse.json(
@@ -97,4 +108,4 @@ export async function PATCH(request, { params }) {
       { status: 500 }
     );
   }
-} 
+}
