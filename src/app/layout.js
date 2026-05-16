@@ -11,9 +11,9 @@ export const metadata = {
   title: "AI Tools Marketplace - Discover the Best AI Tools",
   description: "Discover and share the best AI tools for your needs",
   icons: {
-    icon: '/favicon.ico',
-    shortcut: '/favicon.ico',
-    apple: '/favicon.ico',
+    icon: '/file.svg',
+    shortcut: '/file.svg',
+    apple: '/file.svg',
   },
 };
 
